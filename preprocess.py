@@ -48,12 +48,12 @@ class Preprocess(nn.Module):
             raise ValueError(f'Stable-diffusion version {self.sd_version} not supported.')
         self.model_key = model_key
         # Create model
-        self.vae = AutoencoderKL.from_pretrained(model_key, subfolder="vae", revision="fp16",
+        self.vae = AutoencoderKL.from_pretrained(model_key, subfolder="vae",
                                                  torch_dtype=torch.float16).to(self.device)
         self.tokenizer = CLIPTokenizer.from_pretrained(model_key, subfolder="tokenizer")
-        self.text_encoder = CLIPTextModel.from_pretrained(model_key, subfolder="text_encoder", revision="fp16",
+        self.text_encoder = CLIPTextModel.from_pretrained(model_key, subfolder="text_encoder",
                                                           torch_dtype=torch.float16).to(self.device)
-        self.unet = UNet2DConditionModel.from_pretrained(model_key, subfolder="unet", revision="fp16",
+        self.unet = UNet2DConditionModel.from_pretrained(model_key, subfolder="unet",
                                                    torch_dtype=torch.float16).to(self.device)
         self.paths, self.frames, self.latents = self.get_data(opt.data_path, opt.n_frames)
         
@@ -225,7 +225,9 @@ class Preprocess(nn.Module):
                 latent_frames[b:b + batch_size] = mu * pred_x0 + sigma * eps
 
             if save_latents and t in timesteps_to_save:
+                os.makedirs(os.path.join(save_path, 'latents'), exist_ok=True)
                 torch.save(latent_frames, os.path.join(save_path, 'latents', f'noisy_latents_{t}.pt'))
+        os.makedirs(os.path.join(save_path, 'latents'), exist_ok=True)
         torch.save(latent_frames, os.path.join(save_path, 'latents', f'noisy_latents_{t}.pt'))
         return latent_frames
 

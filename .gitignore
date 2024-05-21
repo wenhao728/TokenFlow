@@ -1,1 +1,6 @@
 .DS_Store
+
+latents
+data
+tokenflow-results_pnp_SD_1.5
+__pycache__
